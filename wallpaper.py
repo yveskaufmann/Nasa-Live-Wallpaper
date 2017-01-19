@@ -61,7 +61,7 @@ def load_nasa_images():
     with urlopen(nasa_apod) as res:
         tree = html.parse(res)
         item = tree.xpath('/html/body/center[1]/p[2]/a')
-        if item and len(item) > 0 and item[0].has_key('href'):
+        if item and len(item) > 0 and item[0].get('href'):
             image_url = nasa_apod + item[0].get('href')
             images.insert(0, {
                 'image_url': image_url
