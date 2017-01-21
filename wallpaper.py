@@ -71,9 +71,8 @@ def load_nasa_images():
 
 def download_when_required(image_url):
     wallpaper_folder = os.path.expanduser(WALLPAPER_FOLDER)
-
     if not os.path.isdir(wallpaper_folder):
-        os.mkdir(wallpaper_folder)
+        os.makedirs(wallpaper_folder)
 
     image_name = image_url.split('/')[-1]
     image_path = os.path.join(wallpaper_folder, image_name)
@@ -109,14 +108,21 @@ def set_image(image_path):
             image_path = 'file://' + image_path
 
         image_path = "\"{0}\"".format(image_path)
-        dconf_args = ['/usr/bin/dconf', 'write', BACKGROUND_SCHEMA + '/' + BACKGROUND_IMAGE_URI, image_path]
+        dconf_args = [
+            '/usr/bin/dconf',
+            'write',
+            BACKGROUND_SCHEMA + '/' + BACKGROUND_IMAGE_URI, image_path
+        ]
         subprocess.run(dconf_args, stdout=subprocess.PIPE)
 
     if sys.platform == 'win32':
         import ctypes
         SPI_SETDESKWALLPAPER = 0x0014
         SPIF_SENDWININICHANGE = 0x2
-        ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, image_path, SPIF_SENDWININICHANGE)
+        ctypes.windll.user32.SystemParametersInfoW(
+            SPI_SETDESKWALLPAPER, 0,
+            image_path, SPIF_SENDWININICHANGE
+        )
 
 
 def terminate_handler(handler):
