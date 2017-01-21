@@ -1,4 +1,4 @@
-Nase Live Wallpaper
+Nasa Live Wallpaper
 ===================
 
 Is a python script, that fetches NASA Images of the day
