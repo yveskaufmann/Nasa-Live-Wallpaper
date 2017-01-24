@@ -1,3 +1,4 @@
 lxml==3.6.4
 Pillow==3.4.1
+future==0.16.0
 
