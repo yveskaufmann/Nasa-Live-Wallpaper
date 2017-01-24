@@ -1,9 +1,14 @@
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import os
 import sys
 import time
 
 from functools import wraps
-from urllib.request import urlopen
+from future.moves.urllib.request import urlopen
 
 from lxml import etree
 from lxml import html
@@ -21,11 +26,12 @@ def live_wallpaper():
 
     @terminate_handler 
     def exit_handler():
-        nonlocal keep_running
-        keep_running = False
+        # nonlocal keep_running
+        exit_handler.keep_running = False
         print("Terminating live_wallpaper...")
 
-    while keep_running:
+    exit_handler.keep_running = True
+    while exit_handler.keep_running :
         current_image += 1
         if current_image >= len(images):
             current_image = 0
@@ -48,22 +54,22 @@ def load_nasa_images():
     nasa_rss_feed = 'https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss'
     nasa_apod = 'https://apod.nasa.gov/apod/'
 
-    with urlopen(nasa_rss_feed) as res:
-        tree = etree.parse(res)
+    res = urlopen(nasa_rss_feed)
+    tree = etree.parse(res)
 
-        for item in tree.findall('./channel/item'):
-            images.append({
-                'image_url': item.find('enclosure').get('url')
-            })
+    for item in tree.findall('./channel/item'):
+        images.append({
+            'image_url': item.find('enclosure').get('url')
+        })
 
-    with urlopen(nasa_apod) as res:
-        tree = html.parse(res)
-        item = tree.xpath('/html/body/center[1]/p[2]/a')
-        if item and len(item) > 0 and item[0].get('href'):
-            image_url = nasa_apod + item[0].get('href')
-            images.insert(0, {
-                'image_url': image_url
-            })
+    res = urlopen(nasa_apod)
+    tree = html.parse(res)
+    item = tree.xpath('/html/body/center[1]/p[2]/a')
+    if item and len(item) > 0 and item[0].get('href'):
+        image_url = nasa_apod + item[0].get('href')
+        images.insert(0, {
+            'image_url': image_url
+        })
     return images
 
 

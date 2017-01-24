@@ -1,6 +1,10 @@
 """
 This modules implements the Linux implementation of LiveWallpaper
 """
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os
 import subprocess
@@ -28,7 +32,7 @@ class LinuxLiveWallpaper(AbstractLiveWallpaper):
             'write',
             BACKGROUND_SCHEMA + '/' + BACKGROUND_IMAGE_URI, image_path
         ]
-        subprocess.run(dconf_args, stdout=subprocess.PIPE)
+        subprocess.call(dconf_args)
 
 
 
