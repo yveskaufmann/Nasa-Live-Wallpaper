@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import os
 import sys
 import time
+import click
 
 from functools import wraps
 from future.moves.urllib.request import urlopen
@@ -13,25 +14,23 @@ from future.moves.urllib.request import urlopen
 from lxml import etree
 from lxml import html
 
-from .native import LiveWallpaper 
+from .native import LiveWallpaper
 
-WALLPAPER_CHANGE_RATE = 20
+def live_wallpaper(images_per_day, change_rate):
 
-def live_wallpaper():
-
-    images = load_nasa_images()
+    images = load_nasa_images(images_per_day=images_per_day)
     current_image = -1
     keep_running = True
     wallpaper = LiveWallpaper()
 
-    @terminate_handler 
+    @terminate_handler
     def exit_handler():
         # nonlocal keep_running
         exit_handler.keep_running = False
         print("Terminating live_wallpaper...")
 
     exit_handler.keep_running = True
-    while exit_handler.keep_running :
+    while exit_handler.keep_running:
         current_image += 1
         if current_image >= len(images):
             current_image = 0
@@ -45,10 +44,10 @@ def live_wallpaper():
         except IOError:
             print("Failed to load image {0}".format(image['image_url']))
 
-        time.sleep(WALLPAPER_CHANGE_RATE)
+        time.sleep(change_rate)
 
 
-def load_nasa_images(): 
+def load_nasa_images(images_per_day=5):
 
     images = []
     nasa_rss_feed = 'https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss'
@@ -57,7 +56,10 @@ def load_nasa_images():
     res = urlopen(nasa_rss_feed)
     tree = etree.parse(res)
 
-    for item in tree.findall('./channel/item'):
+    for index, item in enumerate(tree.findall('./channel/item'), 0):
+        if images_per_day > 0 and index >= images_per_day - 1:
+            break
+
         images.append({
             'image_url': item.find('enclosure').get('url')
         })
@@ -94,6 +96,7 @@ def download_when_required(image_url, wallpaper_folder):
 
     return image_path
 
+
 def terminate_handler(handler):
     """
     Terminate handler decorator, is used to mark
@@ -102,6 +105,7 @@ def terminate_handler(handler):
     """
 
     sys_excepthook = sys.excepthook
+
     @wraps(handler)
     def _terminate_handler(extype, value, tb_param):
         if extype is KeyboardInterrupt:
@@ -112,6 +116,3 @@ def terminate_handler(handler):
     sys.excepthook = _terminate_handler
     return _terminate_handler
 
-
-if __name__ == '__main__':
-    live_wallpaper()
