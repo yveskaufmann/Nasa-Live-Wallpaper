@@ -20,9 +20,7 @@ __author__ = 'Yves Kaufmann'
 __all__ = ['live_wallpaper']
 
 
-if not sys.platform.startswith('linux') and not sys.platform.startswith('win32'):
+if ['linux', 'win32', 'darwin'].index(sys.platform) == -1:
     raise NotImplementedError(
-        'The platform %s isn\'t supported.' % sys.platform
+        'The platform {0} isn\'t supported.'.format(sys.platform)
     )
-
-
