@@ -8,11 +8,11 @@ import sys
 import time
 import click
 
-from functools import wraps
-from future.moves.urllib.request import urlopen
+import xml.etree.ElementTree as ET
+import requests
 
-from lxml import etree
-from lxml import html
+from functools import wraps
+from bs4 import BeautifulSoup
 
 from .native import LiveWallpaper
 
@@ -50,11 +50,11 @@ def live_wallpaper(images_per_day, change_rate):
 def load_nasa_images(images_per_day=5):
 
     images = []
-    nasa_rss_feed = 'https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss'
-    nasa_apod = 'https://apod.nasa.gov/apod/'
+    NASE_RSS_FEED = 'https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss'
+    NASA_APOD_URL = 'https://apod.nasa.gov/apod/'
 
-    res = urlopen(nasa_rss_feed)
-    tree = etree.parse(res)
+    res = requests.get(NASE_RSS_FEED)
+    tree = ET.fromstring(res.content)
 
     for index, item in enumerate(tree.findall('./channel/item'), 0):
         if images_per_day > 0 and index >= images_per_day - 1:
@@ -64,11 +64,11 @@ def load_nasa_images(images_per_day=5):
             'image_url': item.find('enclosure').get('url')
         })
 
-    res = urlopen(nasa_apod)
-    tree = html.parse(res)
-    item = tree.xpath('/html/body/center[1]/p[2]/a')
-    if item and len(item) > 0 and item[0].get('href'):
-        image_url = nasa_apod + item[0].get('href')
+    res = requests.get(NASA_APOD_URL)
+    soup = BeautifulSoup(res.content, 'html.parser')
+    items = soup.select('a > img')
+    for item in items:
+        image_url = NASA_APOD_URL + item.find_parent('a')['href']
         images.insert(0, {
             'image_url': image_url
         })

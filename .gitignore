@@ -2,3 +2,7 @@
 /tags
 .vscode/
 *.pyc
+*.egg
+*.egg-info/
+dist
+build

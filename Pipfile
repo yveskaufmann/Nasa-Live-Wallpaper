@@ -4,10 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-lxml = "==3.6.4"
 future = "==0.16.0"
 Pillow = "==3.4.1"
 click = "==7.0"
+requests = "==2.22.0"
+beautifulsoup4 = "==4.8.0"
 
 [dev-packages]
 
