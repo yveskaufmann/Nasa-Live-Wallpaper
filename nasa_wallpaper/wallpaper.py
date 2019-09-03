@@ -41,8 +41,8 @@ def live_wallpaper(images_per_day, change_rate):
                 wallpaper.get_wallpaper_folder()
             )
             wallpaper.set_image(image_path)
-        except IOError:
-            print("Failed to load image {0}".format(image['image_url']))
+        except IOError as e:
+            print("Failed to load image {0} caused by {1}".format(image['image_url'], e))
 
         time.sleep(change_rate)
 
@@ -86,10 +86,11 @@ def download_when_required(image_url, wallpaper_folder):
 
     if not os.path.isfile(image_path):
         try:
-            with urlopen(image_url) as image:
+            with requests.get(image_url) as image:
                 with open(image_path, 'wb') as out:
-                    out.write(image.read())
-        except:
+                    out.write(image.content)
+        except Exception as e:
+            print("Failed to download file caused by {0}".format(e))
             # A existence of a uncomplete files prevents its redownload and
             # its usage is not desired hence we have to delete them.
             os.unlink(image_path)

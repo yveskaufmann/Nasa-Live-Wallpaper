@@ -12,7 +12,7 @@ import subprocess
 from .base import AbstractLiveWallpaper
 
 
-IMAGE_FOLDER = '/Library/Desktop Pictures'
+IMAGE_FOLDER = '~/Pictures'
 
 
 class MacOSLiveWallpaper(AbstractLiveWallpaper):

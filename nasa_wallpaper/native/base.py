@@ -43,4 +43,10 @@ class AbstractLiveWallpaper:
         """
         Retrieve the path to the folder in which the nasa wallpapers are stored.
         """
-        return os.path.join(self.get_picture_folder(), _WALLPAPER_FOLDER)
+        wallpaper_path = os.path.join(self.get_picture_folder(), _WALLPAPER_FOLDER)
+        
+        if not os.path.exists(wallpaper_path):
+            os.makedirs(wallpaper_path)
+        return wallpaper_path
+
+        
