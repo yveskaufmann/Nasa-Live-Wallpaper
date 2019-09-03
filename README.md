@@ -28,6 +28,12 @@ build-dep
 
 ```sh
 pipenv --python 3.6
-pipenv install
-pipenv shell
+make setup
 ```
+
+### Start of the application
+
+```sh
+make start
+```
+
